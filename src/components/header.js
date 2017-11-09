@@ -1,11 +1,14 @@
 import React from 'react';
 import {Glyphicon, Button, Modal, Row, Col} from 'react-bootstrap';
 import Events from './event_emitter.js'
+// import Clients_manager from './clients_manager.js'
+// import Client_response_options from './client_response_options.js'
 
 let styles = {
   header_container:{
     border:'green solid 1px',
-    position:'relative'
+    position:'relative',
+    minHeight:'9em'
   },
   scripts_container:{
     border:'solid 1px blue',
@@ -47,7 +50,6 @@ class Header extends React.Component{
 	}
 
   add_new_script(){
-    console. log()
     let new_script_name = document.getElementById('new_script_name').value
     console.log(new_script_name)
     let payload = {script_name:new_script_name}
@@ -100,7 +102,10 @@ class Header extends React.Component{
 
   scripts_container(){
     let create_scripts_list = () => {
-      if(this.props.scripts_array===undefined) console.log('OH NO UNDEFINED!')
+      if(this.props.scripts_array===undefined || this.props.scripts_array.length ===0) {
+        console.log('OH NO UNDEFINED!')
+        return
+      }
       let items = []
     console.log('lets make some script contianer things')
     console.log(this.props.scripts_array)
@@ -172,7 +177,7 @@ class Header extends React.Component{
          bsStyle="info" bsSize="large" 
          onClick={() => this.setState({ show: true })}
          >
-         Creat new script
+         Create new script
 
        </Button>
 

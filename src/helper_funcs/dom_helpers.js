@@ -3,7 +3,7 @@ let $ = {
 		return document.getElementById(el)
 	},
   init_current_script:(script)=>{
-    console.log('get a script '+script)
+    console.log('get a script? '+script)
 
     if(script === undefined || script === '' || script === null){
       console.log(

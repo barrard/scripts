@@ -1,7 +1,9 @@
 import React from 'react';
-import Question_list from './question_list.js';
-import { Button, Grid, Row, Col, Label} from 'react-bootstrap';
-import InputRange from 'react-input-range';
+// import Question_list from './question_list.js';
+import {Grid, Row, Col, Label} from 'react-bootstrap';
+import Client_response_options from './client_response_options.js';
+import Script_layout from './script_layout.js'
+import Tips_and_tricks from './tips_and_tricks.js'
 
 import Events from './event_emitter.js'
 
@@ -48,6 +50,8 @@ class Make_new_question_answer_chain extends React.Component{
 		console.log(props)
 		super(props);
 		this.state={
+			step:'Intro',
+			steps:props.steps,
 			question_value:'',
 			options:{
 				question_type:'Basic',
@@ -59,7 +63,6 @@ class Make_new_question_answer_chain extends React.Component{
 		}
 		this.client_response_change = this.client_response_change.bind(this);
 		this.handleChange = this.handleChange.bind(this);
-		this.handleSubmit = this.handleSubmit.bind(this);
 		this.set_Question_weight = this.set_Question_weight.bind(this);
 		this.type_change = this.type_change.bind(this);
 		this.add_tag = this.add_tag.bind(this);
@@ -69,6 +72,13 @@ class Make_new_question_answer_chain extends React.Component{
 	}
 
 	componentWillMount() {
+		Events.on('set_step', (data)=>{
+			console.log(data)
+			this.setState({
+				step:data.mode,
+				question_value:data.obj.text
+			})
+		})
 		Events.on('add_tag', ()=>{
 			this.add_tag()
 		})
@@ -105,7 +115,9 @@ class Make_new_question_answer_chain extends React.Component{
 	}
 
 	handleChange(event) {
-	  this.setState({question_value: event.target.value});
+		let data = event.target.value
+	  this.setState({question_value: data});
+	  Events.emit('step_input_change', data)
 	}
 
 	add_tag(event){
@@ -140,183 +152,66 @@ class Make_new_question_answer_chain extends React.Component{
 		console.log(event.target.value)
 	}
 
-	handleSubmit(event) {
-		console.log(this.state.question_value)
-		let opt = this.state.options
-
-		let data = {
-			script_name:this.props.current_script,
-			val:this.state.question_value,
-			type:opt.question_type,
-			tags:opt.tags,
-			weight:opt.question_weight,
-
-		}
-		console.log(data)
-		Events.emit('new_question', data);
-		fetch('/add_question', {
-			method:'post', 
-			body:JSON.stringify(data),
-			headers: { "Content-Type": "application/json" }
-		})
-			.then((resp)=>{
-				console.log(resp)
-				return resp.json()
-			})
-			.then((data)=>{
-				console.log('Handle submite question')
-				console.log(data)
-			})
-			.catch((ex)=>{
-				console.log('err?')
-				console.log(ex)
-			})
-	  	event.preventDefault();
-	  	this.setState({
-	  	question_value:''
-	  })
-	}
 
 	get_client_response_array(){
 		return this.state.client_responses
 	}
 
 	render(){
-		let Q = this.props.Q
 		let tags = []
 		this.state.options.tags.forEach((i, key)=>{
 			tags.push(<Label key={key}style={styles.tags}>{i}</Label>)
 		})
-		// console.log('mkae_quetion andwer render what is Q?')
-		// console.log(this.props.Q)
+		console.log(this.state.step)
+
 		return(
-			<Grid>
-				<h2>This is where you can create new question&Answer chains</h2>
-				
+			<div>
+				<h2>This is where you can create cold call script</h2>
 				<div style={styles.text_edit_div}>
-					<h4>Question</h4>
 					<Row>
-						<Col xs={6} className='border-blue'>
+						<Col xs={5} className='border-blue'>
+						<h4>{this.state.step}</h4>
 							<textarea 
 								onChange={this.handleChange} 
 								value={this.state.question_value}
 								id='main_text' 
-								placeholder="Question...?">hi</textarea>
+								placeholder={this.state.step}>hi</textarea>
 
 						</Col>
-						<Col xs={6} className='border-red'>
-							<Question_options
-								type_change={this.type_change}
-								type_val={this.state.options.question_type}
-								tags={tags}
-								add_tag={this.add_tag}
-								weight={this.state.options.question_weight}
-								set_weight={this.set_Question_weight}
+						<Col xs ={5}>
+							<Client_response_options
+								step={this.state.step}
 							/>
 						</Col>
 					</Row>
-					<Row>
-						<Col xs={12}>
-						<h3>Client Response options</h3>
-							<div>
-								<input 
-									onChange={this.client_response_change}
-									style={styles.nice_input}
-									type='text' 
-									name='client_response' 
-									value={this.state.client_response}
-									placeholder='add a possible client response ot this question'
-								/>
-								<Button 
-									style={styles.wide_button}
-									active
-									bsStyle="success" bsSize="large" 
-									onClick={this.add_client_response}>Add Response/Answer
-								</Button>
-							</div>
-						</Col>
+					<Row>		
 					</Row>
-					<Create_question_btn 
-						onClick={this.handleSubmit}
-					/>
-					<Question_list
-						Q={Q}
-						delete_question={this.props.delete_question}
-						
-					/>
 				</div>
-
-			</Grid>
+				<Grid>
+					<Row>
+						<Col xs={6}>
+							<Script_layout
+								step={this.state.step}
+							/>
+							</Col>
+							<Col xs={6}>
+								<Tips_and_tricks
+								step={this.state.step}
+								/>
+							</Col>
+						</Row>
+					</Grid>
+			</div>
 		)
 	}
 }
 
 export default Make_new_question_answer_chain
-let handleKeyPress = (event) => {
-  if(event.key == 'Enter'){
-    console.log('enter press here! ')
-    Events.emit('add_tag')
-  }
-}
-let Question_options = (props) => {
-	return(
-		<div style={styles.question_options}>
-			<div>
-				<label 
-					className="labels" 
-					htmlFor="question_type">
-					Question Type
-				</label>
-				<input 
-					onChange={props.type_change}
-					style={styles.nice_input}
-					type='text' 
-					name='question_type' 
-					value={props.type_val}
-				/>
+// let handleKeyPress = (event) => {
+//   if(event.key == 'Enter'){
+//     console.log('enter press here! ')
+//     Events.emit('add_tag')
+//   }
+// }
 
-			</div>
-			<div>
-				<label 
-					className="labels"
-					htmlFor="question_tags">
-					Question Tags
-				</label>
-				<input 
-					onKeyPress={handleKeyPress}
-					style={styles.nice_input}
-					type='text' 
-					name='question_tags' 
-					value={props.type_tags}
-				/>
-				<button onClick={props.add_tag}>add tag</button>
-				<div style={styles.tag_div}>{props.tags}</div>
-			</div>
-			<div>
-				<label 
-					className="labels"
-					htmlFor="question_weight">
-					Question Weighted value
-				</label>
-				<span style={styles.span_weight}>{props.weight}</span>
-				<input
-					min='0'
-					max='10'
-					type='range'
-					name='question_weight'
-					value={props.weight}
-					onChange={props.set_weight}
-				/>
-			</div>
-
-		</div>
-	)
-}
-let Create_question_btn = (props) =>{
-	return (
-		<Button style={styles.wide_button}bsStyle="primary" bsSize="large" active onClick={props.onClick}>Add Question</Button>
-
-		// <button onClick={props.onClick}>butt</button>
-	)
-}
 

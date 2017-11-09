@@ -31,9 +31,23 @@ var script_schema = new Schema({
 
 })
 
+var client_schema = new Schema({
+	tags:[String],
+	sex:String,
+	address:{city:String,
+					street:String,
+					zip:Number
+					},
+	name:String,
+	created_on:{type:Date, default:Date.now},
+	is_active:{type:Boolean, default:false}
+
+})
+
 
 module.exports = {
 	Question:mongoose.model('Question', question_schema),
   Answer:mongoose.model('Answer', answer_schema),
-  Scripts:mongoose.model('Scripts', script_schema)
+  Scripts:mongoose.model('Scripts', script_schema),
+  Clients:mongoose.model('Clients', client_schema)
 }
