@@ -1,14 +1,38 @@
 import React from 'react';
+import ClientResponseRptions from './client_response_options.js';
+import {Glyphicon, Button} from 'react-bootstrap';
+import Font_size_btn from './font_size_btn.js'
 
+let styles={
+  edit_tips_btn:{
+    position:'absolute',
+    top:'5px',
+    right:'5px'
+  },
+  pre_wrap:{
+    whiteSpace: 'pre-wrap'
+  },
+  relative_div:{
+    position:'relative'
+  }
+}
+
+//props
+// step
 class Tips_and_tricks extends React.Component{
   constructor(props) {
     super(props);
     this.state={
+      edit_state:false,
       'Intro':{
-        text:'hi'
+        text:`Usually you write
+          "Hello my name is ________.  BLABH BLAH BHAL....
+           Im selling shit,  "
+           and end with:
+           "Have i caught you at a bad time??`
       },
       'Grab Attention':{
-        text:'attention grabbing'
+        text:'Name drop?,   Give examples of other companies winning like you with your product'
       },
       'Qualifying Questions':{
         text:'do you do this process and experience this pain, we cna help you!'
@@ -26,23 +50,99 @@ class Tips_and_tricks extends React.Component{
       },
       'Close':{
         text:'Buy now, or you will be sorry'        
-      }
-
+      },
+      'Good-bye':{
+        text:'Ok ill call ya back next year!'
     }
+
+  }
+  this.edit_tips = this.edit_tips.bind(this)
+  this.handle_tips_and_triks_edit_textbox = this.handle_tips_and_triks_edit_textbox.bind(this)
+}
+
+  componentWillMount(){
+
+  }
+
+  handle_tips_and_triks_edit_textbox(e){
+    let tmp = {}
+    let step = this.props.step
+    let val = e.target.value
+    console.log(this.state[step].text)
+    tmp[step] = {}
+    tmp[step].text=val
+    this.setState(tmp)
+
+  }
+
+  edit_tips(){
+    console.log('edit')
+    console.log(this.state.step)
+    console.log(this.state[this.state.step])
+    let edit_state = !this.state.edit_state
+    this.setState({
+      edit_state:edit_state
+    })
   }
 
   render(){
-    console.log(this.props.step)
-    let current_tips = this.state[this.props.step]
-    console.log(current_tips)
-    console.log(current_tips['text'])
-    let data = current_tips['text']
+
+    // console.log(this.props)
+    // console.log('objections = '+this.props.objections)
+    // console.log(this.state)
+    let step = this.props.step
+    let current_tips = this.state[step]
+    // console.log(current_tips)
+    // console.log(current_tips['text'])
+    let data;
+    // console.log('what is edit state?')
+    // console.log(this.state.edit_state)
+    if(!this.state.edit_state){
+      // console.log('what is edit state?')
+      // console.log(this.state.edit_state)
+      data = <div style={styles.pre_wrap}>{current_tips['text']}</div>
+    }else{
+      // console.log('what is edit state?')
+      // console.log(this.state.edit_state)
+      data = (
+        <div style={styles.relative_div}>
+        <textarea 
+          autoFocus
+          onChange={this.handle_tips_and_triks_edit_textbox} 
+          value={current_tips['text']}
+          id='tips_and_triks_edit_textbox' 
+          placeholder='edit tips and tricks'>
+        </textarea>
+        <Font_size_btn
+          textarea_id='tips_and_triks_edit_textbox'>
+          
+        </Font_size_btn>
+        </div>
+      )
+    }
+    // console.log(data)
+    // console.log(current_tips['text'])
 
     return(
       <div>
         tips and tricks for 
         <h2>{this.props.step}</h2>
+        <Button 
+          style={styles.edit_tips_btn}
+          onClick={this.edit_tips}>
+          
+          <Glyphicon
+            glyph='edit'>
+          </Glyphicon>
+        </Button>
         {data}
+        <br/><hr/>
+        <ClientResponseRptions
+          script_data_index={this.props.script_data_index}
+          add_client_response={this.props.add_client_response}
+          step={this.props.step}
+          script_data={this.props.script_data}
+        />
       </div>
     )
   }

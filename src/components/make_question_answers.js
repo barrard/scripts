@@ -1,7 +1,5 @@
 import React from 'react';
-// import Question_list from './question_list.js';
 import {Grid, Row, Col, Label} from 'react-bootstrap';
-import Client_response_options from './client_response_options.js';
 import Script_layout from './script_layout.js'
 import Tips_and_tricks from './tips_and_tricks.js'
 
@@ -31,11 +29,7 @@ const styles = {
 		fontSize:'30px'
 	},
 	question_options:{
-		// padding:'1px',
-		// marginLeft:'10px',
-		// border:'1px solid red',
-		// position:'absolute',
-		// dispaly:'flex'
+
 
 	},
 	nice_input:{
@@ -44,6 +38,10 @@ const styles = {
 	
 }
 
+
+//props
+//current_script
+//script_data
 class Make_new_question_answer_chain extends React.Component{
 	constructor(props) {
 		console.log('MAKE Q_A cain compnent constuructor')
@@ -51,60 +49,22 @@ class Make_new_question_answer_chain extends React.Component{
 		super(props);
 		this.state={
 			step:'Intro',
-			steps:props.steps,
-			question_value:'',
-			options:{
-				question_type:'Basic',
-				tags:['tags'],
-				question_weight:1
-			},
-			client_response:'',
-			client_responses:[]
+			script_data_index:0
+
 		}
-		this.client_response_change = this.client_response_change.bind(this);
-		this.handleChange = this.handleChange.bind(this);
-		this.set_Question_weight = this.set_Question_weight.bind(this);
-		this.type_change = this.type_change.bind(this);
-		this.add_tag = this.add_tag.bind(this);
-		this.add_client_response = this.add_client_response.bind(this);
+
+		this.handle_step_text_box_input = this.handle_step_text_box_input.bind(this);
+		this.set_step = this.set_step.bind(this);
 
 
 	}
 
 	componentWillMount() {
-		Events.on('set_step', (data)=>{
-			console.log(data)
-			this.setState({
-				step:data.mode,
-				question_value:data.obj.text
-			})
-		})
-		Events.on('add_tag', ()=>{
-			this.add_tag()
-		})
-		Events.on('question_row_clicked', (e)=>{
-			this.handle_list_item_clicked(e)
-		})
+		//this is hackey
+		// this.get_objections()
 	}
 
-	
 
-	add_client_response(e){
-		let client_response_array = this.state.client_responses;
-		client_response_array.push(this.state.client_response)
-		let arr = this.get_client_response_array()
-		console.log(arr)
-		this.setState({
-			client_responses:client_response_array,
-			client_response:''
-		})
-	}
-
-	client_response_change(e){
-		this.setState({
-			client_response:e.target.value
-		})
-	}
 
 	handle_list_item_clicked(e){
 		if(!e){
@@ -114,35 +74,7 @@ class Make_new_question_answer_chain extends React.Component{
 		console.log(e)
 	}
 
-	handleChange(event) {
-		let data = event.target.value
-	  this.setState({question_value: data});
-	  Events.emit('step_input_change', data)
-	}
-
-	add_tag(event){
-		// let val = event.target
-		let tags = document.querySelectorAll('[name=question_tags]')[0]
-		var val = tags.value
-
-		if(val===null||val==="") return false
-		let options = {...this.state.options}
-		console.log(options.tags)
-		options.tags = options.tags.concat(val.split(','))
-		this.setState({options})
-		tags.value=''
-	}
-
-	type_change(event){
-		// console.log(event)
-		let options = {...this.state.options}
-		let type = event.target.value
-		options.question_type = type
-		this.setState({
-			options:options
-		})
-
-	}
+	
 
 	set_Question_weight(event){
 		let val = event.target.value
@@ -157,46 +89,110 @@ class Make_new_question_answer_chain extends React.Component{
 		return this.state.client_responses
 	}
 
-	render(){
-		let tags = []
-		this.state.options.tags.forEach((i, key)=>{
-			tags.push(<Label key={key}style={styles.tags}>{i}</Label>)
-		})
-		console.log(this.state.step)
+	set_step(e){
+	  console.log(e.target)
+	  let target = e.target
+	  let isSelected = target.getAttribute('data-isSelected')
+	  console.log(isSelected)
+	  //check if the setp is already selected
+	  if(isSelected) return
+	  let script_length = this.props.script_data.length
+	  if(target.getAttribute('data-key')){
+	    let key = parseInt(target.getAttribute('data-key'))
+	    console.log(key)
+	    console.log(script_length)
+	    console.log('HAS KEY!! '+key)
+	    key +=1
+	    console.log(key)
+	    //error catch
+	    if (key===script_length) return
 
+	    let next_step = document.querySelector('[data-step-key="'+key+'"]')
+	    console.log(next_step)
+	    next_step.click()
+
+	    
+	    return
+	  } 
+	  let step = target.getAttribute('data-step')
+	  if(step === this.state.step) return
+	  console.log(e.target)
+
+	  this.get_text_via_mode(this.props.script_data, step, (obj, index)=>{
+	    console.log(obj)
+	    console.log('emitting set_step')
+	    // Events.emit('set_step', data)
+	    this.setState({
+	      step:obj.title,
+	      current_objections:obj.objections,
+	      script_data_index:index
+	    })
+	    //this is hackey
+	    // this.get_objections()
+
+
+	  })
+
+	}
+
+
+	  get_text_via_mode(obj_array, mode, callback){
+	    console.log('obj_array')
+	    console.log(obj_array)
+	    console.log('mode')
+	    console.log(mode)
+	    obj_array.filter((obj)=>{
+	      if(obj.title === mode){
+	        // console.log(obj)
+	        // console.log(obj.text)
+	        let index = obj_array.indexOf(obj)
+	        callback(obj, index)
+	      }
+	      // // console.log(obj.title === mode)
+	      // return obj.title == mode
+	    })
+	  }
+
+	  handle_step_text_box_input(event) {
+	    let data = event.target.value
+	    console.log(data)
+	    let current_step = this.state.step
+	    this.props.handle_step_text_box_input(data, current_step)
+
+	  }
+
+	  get_objections(){
+	  	this.get_text_via_mode(this.props.script_data, this.state.step, (obj)=>{
+	  		console.log(obj)
+	  		this.setState({
+	  		   current_objections:obj.objections
+	  		 })
+	  	})
+	  }
+
+
+	render(){
+	// this.get_objections()
 		return(
+
 			<div>
 				<h2>This is where you can create cold call script</h2>
-				<div style={styles.text_edit_div}>
-					<Row>
-						<Col xs={5} className='border-blue'>
-						<h4>{this.state.step}</h4>
-							<textarea 
-								onChange={this.handleChange} 
-								value={this.state.question_value}
-								id='main_text' 
-								placeholder={this.state.step}>hi</textarea>
-
-						</Col>
-						<Col xs ={5}>
-							<Client_response_options
-								step={this.state.step}
-							/>
-						</Col>
-					</Row>
-					<Row>		
-					</Row>
-				</div>
 				<Grid>
 					<Row>
 						<Col xs={6}>
 							<Script_layout
+								set_step={this.set_step}
 								step={this.state.step}
+								script_data={this.props.script_data}
+								handle_step_text_box_input={this.handle_step_text_box_input}
 							/>
 							</Col>
 							<Col xs={6}>
 								<Tips_and_tricks
-								step={this.state.step}
+									script_data_index={this.state.script_data_index}
+									add_client_response={this.props.add_client_response}
+									step={this.state.step}
+									script_data={this.props.script_data}
 								/>
 							</Col>
 						</Row>
@@ -207,11 +203,5 @@ class Make_new_question_answer_chain extends React.Component{
 }
 
 export default Make_new_question_answer_chain
-// let handleKeyPress = (event) => {
-//   if(event.key == 'Enter'){
-//     console.log('enter press here! ')
-//     Events.emit('add_tag')
-//   }
-// }
 
 

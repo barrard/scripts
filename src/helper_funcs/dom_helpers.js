@@ -4,6 +4,7 @@ let $ = {
 	},
   init_current_script:(script)=>{
     console.log('get a script? '+script)
+    console.log(script)
 
     if(script === undefined || script === '' || script === null){
       console.log(

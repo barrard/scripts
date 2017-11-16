@@ -13,7 +13,9 @@ var logger = require('tracer').colorConsole({
 
 var Question_model = require('./mongoose_models/question_model')
 
-mongoose.connect("mongodb://localhost/Q_A")
+// mongoose.connect("mongodb://localhost/Q_A")
+var MongoClient = require('mongodb').MongoClient
+var url = 'mongodb://localhost:27017/Q_A';
 
 // app.use(function(req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "*");
@@ -29,6 +31,15 @@ function err_handle(err){
 	if(!err) logger.log('no err')
 		else logger.log('err'+err)
 }
+
+app.post('/save_script', (req, res)=>{
+	MongoClient.connect(url, function(err, db) {
+	  if (!err) {
+	  	console.log('got connected')
+
+	  }
+	})
+})
 
 app.get('/delete_script/:id', (req, res)=>{
 	let id = req.params.id
@@ -178,3 +189,4 @@ app.get('/get_QA_list/:script', function(req, res){
 
 var port = 33333
 app.listen(port)
+console.log('listening on port '+port)

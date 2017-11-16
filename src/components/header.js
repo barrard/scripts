@@ -1,6 +1,7 @@
 import React from 'react';
 import {Glyphicon, Button, Modal, Row, Col} from 'react-bootstrap';
 import Events from './event_emitter.js'
+import CreateScriptModal from './make_script_modal.js'
 // import Clients_manager from './clients_manager.js'
 // import Client_response_options from './client_response_options.js'
 
@@ -30,11 +31,10 @@ class Header extends React.Component{
 	constructor(props) {
 		super(props);
 		this.state={
-      show_modal:true,
-      scripts_array:[]
+      scripts_array:[],
+      new_script_name:'',
 		}
-    this.create_new_script = this.create_new_script.bind(this)
-    this.add_new_script = this.add_new_script.bind(this)
+    // this.handle_new_script_change = this.handle_new_script_change.bind(this)
 	}
 
 	componentWillMount() {
@@ -49,56 +49,51 @@ class Header extends React.Component{
   //     })
 	}
 
-  add_new_script(){
-    let new_script_name = document.getElementById('new_script_name').value
-    console.log(new_script_name)
-    let payload = {script_name:new_script_name}
-    fetch('/add_script',{
-      method: "POST",
-      body: JSON.stringify( payload ),
-      headers: { "Content-Type": "application/json" }
+  // add_new_script(){
+  //   let new_script_name = document.getElementById('new_script_name').value
+  //   console.log(new_script_name)
+  //   let payload = {script_name:new_script_name}
+    //for demo only
+    // Events.emit('add_new_script', {name:new_script_name, dbid:'1234-abcd'})
 
-    }).then((data)=>{
-      console.log('can i get the id please')
-      return data.json()
-    }).then((data)=>{
-        //add error handle
-        if(data.success){
-          //get teh last added scrpipt dom element
-          Events.emit('add_new_script', {name:new_script_name, dbid:data.success})
+    // fetch('/add_script',{
+    //   method: "POST",
+    //   body: JSON.stringify( payload ),
+    //   headers: { "Content-Type": "application/json" }
 
-        }
+    // }).then((data)=>{
+    //   console.log('can i get the id please')
+    //   return data.json()
+    // }).then((data)=>{
+    //     //add error handle
+    //     if(data.success){
+    //       //get teh last added scrpipt dom element
+    //       Events.emit('add_new_script', {name:new_script_name, dbid:data.success})
 
-    })
-  }
+    //     }
 
-  create_new_script(){
-    let show = !this.state.show_modal
-    this.setState({
-      show_modal:show
-    })
-    document.getElementById('new_script_name').focus()
-
-  }
-
-  emit_clicked_script_item(e){
-    let val = e.target.getAttribute('data-val')
-    console.log(val)
-    Events.emit('set_current_script', val)
-  }
-
-  delete_script(e){
-    let dbid = e.target.getAttribute('data-dbid')
-    let val = e.target.getAttribute('data-val')
-    let confirm = window.confirm('Are you sure you want to delete script: '+val)
-    if(confirm){
-      let scripts_array = this.props.scripts_array
-      console.log(scripts_array)
-      Events.emit('delete_script', dbid)
+    // })
+  // }
 
 
-    }
-  }
+  // emit_clicked_script_item(e){
+  //   let val = e.target.getAttribute('data-val')
+  //   console.log(val)
+  //   Events.emit('set_current_script', val)
+  // }
+
+  // delete_script(e){
+  //   let dbid = e.target.getAttribute('data-dbid')
+  //   let val = e.target.getAttribute('data-val')
+  //   let confirm = window.confirm('Are you sure you want to delete script: '+val)
+  //   if(confirm){
+  //     let scripts_array = this.props.scripts_array
+  //     console.log(scripts_array)
+  //     Events.emit('delete_script', dbid)
+
+
+  //   }
+  // }
 
   scripts_container(){
     let create_scripts_list = () => {
@@ -114,7 +109,7 @@ class Header extends React.Component{
         items.push(
 
           <li
-            onClick={this.emit_clicked_script_item}
+            onClick={(e)=> this.props.script_select(e.target.getAttribute('data-val'))}
             className='script_list_item'
             count={key}
             key={key}
@@ -135,11 +130,13 @@ class Header extends React.Component{
             <Button 
               className="delete_script_item" 
               bsStyle="danger"
-              onClick={(e)=>this.delete_script(e)}
-              data-dbid={item.dbid}>
+              onClick={(e)=> this.props.delete_script(e)}
+              data-dbid={item.dbid}
+              data-val={item.name}>
               <Glyphicon 
                 data-dbid={item.dbid}
-                glyph="remove">
+                glyph="remove"
+                data-val={item.name}>
               </Glyphicon>
             </Button>
 
@@ -158,72 +155,22 @@ class Header extends React.Component{
     )
   }
 
-  get_modal(){
-    let close = () => this.setState({ show: false });
-    let add_script = () => {
-      close()
-       this.add_new_script()
-     }
-     let handleKeyPress = (event) => {
-       if(event.key === 'Enter'){
-         console.log('enter press here! ')
-         add_script()
-       }
-     }
-     return (
-     <div className="modal-container">
 
-       <Button 
-         bsStyle="info" bsSize="large" 
-         onClick={() => this.setState({ show: true })}
-         >
-         Create new script
 
-       </Button>
-
-       <Modal
-         show={this.state.show}
-         onHide={close}
-         container={this}
-         aria-labelledby="contained-modal-title"
-       >
-         <Modal.Header closeButton>
-           <Modal.Title id="contained-modal-title">Create New Script</Modal.Title>
-         </Modal.Header>
-         <Modal.Body>
-         <label 
-            className="labels" 
-            htmlFor="new_script_name">
-            New script name
-         </label>
-          <input
-            autoFocus
-            type="text"
-            name="new_script_name"
-            id="new_script_name"
-            onKeyPress={handleKeyPress}
-          />
-         </Modal.Body>
-         <Modal.Footer>
-           <Button bsStyle='success' onClick={add_script}>Create</Button>
-           <Button bsStyle='danger' onClick={close}>Cancle</Button>
-         </Modal.Footer>
-       </Modal>
-     </div>
-   );
-  }
 
 
   render(){
-    let Creat_script_modal = ()=> this.get_modal()
     let Scripts_container = ()=> this.scripts_container()
     console.log('RENDERING HEADER  LETS CHECK THE SCRIPTS')
+    console.log(this.props.current_script)
 
     return(
       <div style = {styles.header_container}>
       <Row>
         <Col xs={4}>      
-          <Creat_script_modal/>
+          <CreateScriptModal
+            add_script={this.props.add_script}
+          />
         </Col>
 
         <Col xs={4}>
