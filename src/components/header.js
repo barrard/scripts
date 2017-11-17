@@ -174,7 +174,7 @@ class Header extends React.Component{
         </Col>
 
         <Col xs={4}>
-          <h1 className="center_text">Sale script creater</h1>
+          <h1 className="center_text">Sale script creater<span className="blinker"></span></h1>
           <h2 className="center_text">{this.props.current_script}</h2>
         </Col>
         <Col xs={4} className="position-relative">

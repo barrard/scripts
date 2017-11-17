@@ -3,7 +3,6 @@ import {Grid, Row, Col, Label} from 'react-bootstrap';
 import Script_layout from './script_layout.js'
 import Tips_and_tricks from './tips_and_tricks.js'
 
-import Events from './event_emitter.js'
 
 
 
@@ -48,11 +47,13 @@ class Make_new_question_answer_chain extends React.Component{
 		console.log(props)
 		super(props);
 		this.state={
+			current_objection:'',
+			current_rebuttals:[],
 			step:'Intro',
 			script_data_index:0
 
 		}
-
+		this.set_objection_rebuttals = this.set_objection_rebuttals.bind(this)
 		this.handle_step_text_box_input = this.handle_step_text_box_input.bind(this);
 		this.set_step = this.set_step.bind(this);
 
@@ -60,36 +61,25 @@ class Make_new_question_answer_chain extends React.Component{
 	}
 
 	componentWillMount() {
-		//this is hackey
-		// this.get_objections()
+
 	}
 
 
+	hackey_rebuttle_list_clear(){
+		let rebuttle_list = document.getElementById('rebuttle_list');
+		// if(!rebuttle_list){
+		// 	console.log(rebuttle_list)
+		// 	return
+		// } else{
+		// 	console.log(rebuttle_list)
+		// 	return
+		// }
+		rebuttle_list.innerHTML=''
 
-	handle_list_item_clicked(e){
-		if(!e){
-			console.log('error handler.... :)')
-			return
-		}
-		console.log(e)
-	}
-
-	
-
-	set_Question_weight(event){
-		let val = event.target.value
-		let options = {...this.state.options}
-		options.question_weight=val
-		this.setState({options})
-		console.log(event.target.value)
-	}
-
-
-	get_client_response_array(){
-		return this.state.client_responses
 	}
 
 	set_step(e){
+		// this.hackey_rebuttle_list_clear()
 	  console.log(e.target)
 	  let target = e.target
 	  let isSelected = target.getAttribute('data-isSelected')
@@ -124,11 +114,11 @@ class Make_new_question_answer_chain extends React.Component{
 	    // Events.emit('set_step', data)
 	    this.setState({
 	      step:obj.title,
-	      current_objections:obj.objections,
+	      current_objection:'',
+	      current_rebuttals:[],
 	      script_data_index:index
 	    })
-	    //this is hackey
-	    // this.get_objections()
+
 
 
 	  })
@@ -143,13 +133,10 @@ class Make_new_question_answer_chain extends React.Component{
 	    console.log(mode)
 	    obj_array.filter((obj)=>{
 	      if(obj.title === mode){
-	        // console.log(obj)
-	        // console.log(obj.text)
 	        let index = obj_array.indexOf(obj)
 	        callback(obj, index)
 	      }
-	      // // console.log(obj.title === mode)
-	      // return obj.title == mode
+
 	    })
 	  }
 
@@ -161,18 +148,18 @@ class Make_new_question_answer_chain extends React.Component{
 
 	  }
 
-	  get_objections(){
-	  	this.get_text_via_mode(this.props.script_data, this.state.step, (obj)=>{
-	  		console.log(obj)
-	  		this.setState({
-	  		   current_objections:obj.objections
-	  		 })
+
+
+	  set_objection_rebuttals(btn_details){
+	  	console.log(btn_details)
+	  	this.setState({
+	  	  current_objection:btn_details.key,
+	  	  current_rebuttals:btn_details.next_step
 	  	})
 	  }
 
 
 	render(){
-	// this.get_objections()
 		return(
 
 			<div>
@@ -189,6 +176,9 @@ class Make_new_question_answer_chain extends React.Component{
 							</Col>
 							<Col xs={6}>
 								<Tips_and_tricks
+									current_objection={this.state.current_objection}
+									current_rebuttals={this.state.current_rebuttals}
+									set_objection_rebuttals={this.set_objection_rebuttals}									add_new_rebuttle={this.props.add_new_rebuttle}
 									script_data_index={this.state.script_data_index}
 									add_client_response={this.props.add_client_response}
 									step={this.state.step}

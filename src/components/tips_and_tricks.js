@@ -138,6 +138,10 @@ class Tips_and_tricks extends React.Component{
         {data}
         <br/><hr/>
         <ClientResponseRptions
+          current_objection={this.props.current_objection}
+          current_rebuttals={this.props.current_rebuttals}
+          set_objection_rebuttals={this.props.set_objection_rebuttals}
+          add_new_rebuttle={this.props.add_new_rebuttle}
           script_data_index={this.props.script_data_index}
           add_client_response={this.props.add_client_response}
           step={this.props.step}

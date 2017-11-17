@@ -3,7 +3,6 @@ import Q_and_A from './components/make_question_answers.js'
 import Header from './components/header.js'
 import PleaseChooseScript from './components/please_choose_script.js'
 import './App.css';
-import Events from './components/event_emitter.js'
 import $ from './helper_funcs/dom_helpers.js'
 
 
@@ -11,6 +10,8 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state={
+			current_objection:'',
+			current_rebuttals:[],
 			mode:'build',
 			current_script:'Demo',
 			script_names_array:[
@@ -109,41 +110,28 @@ class App extends Component {
 	}
 
 	componentWillMount() {
-		// $.init_current_script(this.state.current_script)
 		console.log('Main App.js will be mounted')
-		this.fetch_Script_list()
-		// Events.on('new_question', (data)=>{
-		// 	console.log('new question added to the list:  \n')
-		// 	console.log(data)
-		// 	let question_list = this.state.questions
-		// 	question_list.push(data)
-		// 	this.setState({
-		// 		questions:question_list
-		// 	})
-		// })
-
-		// Events.on('add_new_script', (data)=>{this.add_new_script(data)})
-		// Events.on('update_tag', (data)=>{this.handle_add_tag})
-		// Events.on('update_answer', (data)=>{this.handle_add_answer})
-		// Events.on('set_current_script', (data)=>{this.set_current_script(data)})
-		// Events.on('delete_script', (data)=>{this.delete_script(data)})
+		// this.fetch_Script_list()
 
 	}
 
 	add_new_rebuttle(rebuttle_data){
 	  console.log(rebuttle_data)
-	  this.get_text_via_mode(this.state.script_data, this.state.step, (obj, index)=>{
+	  this.get_text_via_mode(this.state.script_data, rebuttle_data.step, (obj, index)=>{
 	    console.log(obj)
 	    console.log(index)
 	    let objections = obj.objections
+	    console.log(objections)
 	    console.log(objections[rebuttle_data.client_objection])
+	    if(objections[rebuttle_data.client_objection] === undefined) {
+	      console.log('make array?')
+	      objections[rebuttle_data.client_objection] = {}
+	      objections[rebuttle_data.client_objection].next_step=[]
+	    }
 	    let specific_objection = objections[rebuttle_data.client_objection]
 	    console.log(specific_objection)
-	    console.log(specific_objection.next_step)
-	    if(specific_objection.next_step === undefined) {
-	      console.log('make array?')
-	      specific_objection.next_step = []
-	    }
+	    // console.log(specific_objection.next_step)
+
 	    specific_objection.next_step.push(rebuttle_data.text)
 	    // console.log(specific_objection.next_step)
 	    obj.objections[rebuttle_data.client_objection] = specific_objection
@@ -348,6 +336,8 @@ class App extends Component {
 		// })
 	}
 
+
+
   render() {
   	console.log('App.js is rendering script?')
   	console.log(this.state.current_script)
@@ -365,7 +355,9 @@ class App extends Component {
   	}else{
   		render_if_current_script = (
   			<div>
-  			<Q_and_A 
+  			<Q_and_A
+
+  				add_new_rebuttle={this.add_new_rebuttle}
   				add_client_response = {this.add_client_response}
   				script_data={this.state.script_data}
   				current_script={this.state.current_script}
