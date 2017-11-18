@@ -1,5 +1,5 @@
 import React from 'react';
-import {Grid, Row, Col, Label} from 'react-bootstrap';
+import {Row, Col, Label} from 'react-bootstrap';
 import Script_layout from './script_layout.js'
 import Tips_and_tricks from './tips_and_tricks.js'
 
@@ -33,8 +33,10 @@ const styles = {
 	},
 	nice_input:{
 		fontSize:'15px'
-	}
-	
+	},
+	padding_left:{paddingLeft:'20px'},
+	padding_right:{paddingRight:'20px'}
+
 }
 
 
@@ -154,7 +156,8 @@ class Make_new_question_answer_chain extends React.Component{
 	  	console.log(btn_details)
 	  	this.setState({
 	  	  current_objection:btn_details.key,
-	  	  current_rebuttals:btn_details.next_step
+	  	  current_rebuttals:btn_details.next_step,
+	  	  current_objection_message:btn_details.message
 	  	})
 	  }
 
@@ -164,9 +167,8 @@ class Make_new_question_answer_chain extends React.Component{
 
 			<div>
 				<h2>This is where you can create cold call script</h2>
-				<Grid>
 					<Row>
-						<Col xs={6}>
+						<Col style={styles.padding_right} xs={6}>
 							<Script_layout
 								set_step={this.set_step}
 								step={this.state.step}
@@ -174,8 +176,9 @@ class Make_new_question_answer_chain extends React.Component{
 								handle_step_text_box_input={this.handle_step_text_box_input}
 							/>
 							</Col>
-							<Col xs={6}>
+							<Col style={styles.padding_left} xs={6}>
 								<Tips_and_tricks
+									current_objection_message={this.state.current_objection_message}
 									current_objection={this.state.current_objection}
 									current_rebuttals={this.state.current_rebuttals}
 									set_objection_rebuttals={this.set_objection_rebuttals}									add_new_rebuttle={this.props.add_new_rebuttle}
@@ -186,7 +189,6 @@ class Make_new_question_answer_chain extends React.Component{
 								/>
 							</Col>
 						</Row>
-					</Grid>
 			</div>
 		)
 	}

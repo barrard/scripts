@@ -1,5 +1,14 @@
 import React from 'react';
-import {Button, Modal} from 'react-bootstrap';
+import {Button, Modal, Glyphicon} from 'react-bootstrap';
+
+let styles = {
+  plus_icon:{
+    color:'black',
+    paddingLeft:'5px',
+    fontSize:'20px',
+    textShadow:'0px 0px 1px rgba(222, 222, 222, 1)'
+  }
+}
 
 class Make_script_modal extends React.Component{
   constructor(props) {
@@ -58,6 +67,10 @@ class Make_script_modal extends React.Component{
           onClick={this.show}
           >
           Create new script!
+          <Glyphicon
+            style={styles.plus_icon}
+            glyph="file">
+          </Glyphicon>
 
         </Button>
       <div className="modal-container">

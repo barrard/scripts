@@ -26,27 +26,44 @@ class Tips_and_tricks extends React.Component{
       edit_state:false,
       'Intro':{
         text:`Usually you write
-          "Hello my name is ________.  BLABH BLAH BHAL....
-           Im selling shit,  "
-           and end with:
-           "Have i caught you at a bad time??`
+"Hello my name is ________.  BLABH BLAH BHAL....
+ Im selling shit,  "
+ and end with:
+ "Have i caught you at a bad time??`
       },
       'Grab Attention':{
-        text:'Name drop?,   Give examples of other companies winning like you with your product'
+        text:`Name drop?,   Give examples of other companies winning like you with your product
+This product is so valueable, it will pay back your initial cost very quickly.  If not quickly, then for sure in the long run!`
       },
       'Qualifying Questions':{
-        text:'do you do this process and experience this pain, we cna help you!'
+        text:`
+"By asking great questions, salespeople create great value in the eyes of their prospects."—Marc Wayshak,
+ best-selling author and sales strategist
+The feature request only gives you a superficial idea of what the customer
+wants your product to do. You need to dig beneath the surface by asking 
+questions that uncover the real, pressing need behind this feature.
+That’s the best way to refocus the conversation on your product’s value. `
 
       },
       'Disqualify Statement':{
-        text:'you cannot handle the %15 anticipated growth'
+        text:`
+In the big picture, how would solving that problem help your company?
+Can any of our current workarounds do that for you?
+Is this a make or break issue? Why?`
 
       },
       'Common Pain Examples':{
         text:'growing a company is hard! my product can help'
       },
       'Build Interest':{
-        text:'name drop, examples of other companies winning with your solutions'
+        text:`name drop, examples of other companies winning with your solutions
+        What pain does the customer wish my product could relieve?”
+        Put yourself in the customer’s shoes. They’re trying to envision
+         exactly how your product will make them more successful on a 
+         day-to-day basis. When they ask about a missing feature, it 
+         means that in their mind, there’s a gap between what your product
+          can do and what they need it to do—some burning issue they don’t 
+          think it can solve. `
       },
       'Close':{
         text:'Buy now, or you will be sorry'        
@@ -86,7 +103,6 @@ class Tips_and_tricks extends React.Component{
   }
 
   render(){
-
     // console.log(this.props)
     // console.log('objections = '+this.props.objections)
     // console.log(this.state)
@@ -138,6 +154,7 @@ class Tips_and_tricks extends React.Component{
         {data}
         <br/><hr/>
         <ClientResponseRptions
+          current_objection_message={this.props.current_objection_message}
           current_objection={this.props.current_objection}
           current_rebuttals={this.props.current_rebuttals}
           set_objection_rebuttals={this.props.set_objection_rebuttals}

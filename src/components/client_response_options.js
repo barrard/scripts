@@ -29,7 +29,7 @@ class Client_response_options extends React.Component{
     this.handle_enter_key = this.handle_enter_key.bind(this)
     this.add_response_change = this.add_response_change.bind(this)
     this.add_client_response = this.add_client_response.bind(this)
-    // this.render_button_row = this.render_button_row.bind(this)
+    this.get_script_steps = this.get_script_steps.bind(this)
   }
 
   componentWillMount(){
@@ -68,10 +68,18 @@ class Client_response_options extends React.Component{
   objection_rebuttles(btn_details){
     console.log(btn_details)
     this.props.set_objection_rebuttals(btn_details)
-    // this.setState({
-    //   current_objection:btn_details.key
-    //   current_objection_details:btn_details
-    // })
+  }
+
+  get_script_steps(){
+    let script = this.props.script_data
+    let script_steps = []
+    script.forEach((item, key)=>{
+      let step = item['title']
+      script_steps.push(step)
+
+    })
+    return script_steps
+
   }
  
 
@@ -85,7 +93,6 @@ class Client_response_options extends React.Component{
     console.log(this.props)
     
     // let objections = this.props.objections
-    let Actions_box = []
     let Response_butons = ()=>{
       let button_row = []
       console.log(objections)
@@ -93,7 +100,6 @@ class Client_response_options extends React.Component{
         console.log(key)
         let btn_details = objections[key]
         btn_details.key=key
-        Actions_box.push(<p key={key}>{key}</p>)
 
         console.log(btn_details)
         let button = (
@@ -130,7 +136,6 @@ class Client_response_options extends React.Component{
               placeholder='add a possible client response ot this question'
             />
             <Button 
-              active
               bsStyle="success" bsSize="large" 
               onClick={this.add_client_response}>Add Response/Answer
             </Button>
@@ -141,18 +146,16 @@ class Client_response_options extends React.Component{
        </Row>
        <Row>
          <Rebuttle_box 
+          script_steps={this.get_script_steps}
           current_objection={this.props.current_objection}
+          current_objection_message={this.props.current_objection_message}
           current_rebuttals={this.props.current_rebuttals}
           step={this.props.step}
           add_new_rebuttle={this.props.add_new_rebuttle}
           current_objection_details={this.state.current_objection_details}
          />
        </Row>
-       <Row>
-         <h3>Action to take from this point</h3>
 
-         {Actions_box}
-       </Row>
       </div>
     )
   }

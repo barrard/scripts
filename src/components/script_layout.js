@@ -2,9 +2,25 @@ import React from 'react';
 import { Row, Col, Button} from 'react-bootstrap';
 
 let styles = {
+  step_header:{
+    cursor:'pointer',
+    textAlign:'center',
+    textDecoration:'underline'
+  },
   step_div:{
-    height:'100px',
-    border:'1px solid black',
+    borderRadius:'15px',
+    height: '100px',
+    width: '100%',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  child_step:{
+    overflowY:'scroll',
+    position: 'absolute',
+    top: '0',
+    bottom: '0',
+    left: '0',
+    right: '-17px',
     whiteSpace: 'pre-wrap'
   },
 
@@ -54,25 +70,42 @@ class Script_layout extends React.Component{
     data.forEach((i, key)=>{
 
       let selected = {}
-      let text_box= i.title+'\n'+i.text
+      let Text_box = (props) =>{
+        return (
+          <div
+            data-step={props['data-step']}
+            style={styles.child_step}>
+            <h4
+              className='step_link'
+              data-step={props['data-step']} 
+              style={styles.step_header}>{i.title}
+            </h4>
+            {i.text}
+          </div>
+        )
+      }
       if(i.title === this.props.step) {
         let NextButton = this.next_step_btn(key)
 
         selected =styles_for_selected
-        text_box = (
-          <div style={{position:'relative'}}>
-          <textarea 
-            data-isselected={true}
-            autoFocus
-            onChange={this.props.handle_step_text_box_input} 
-            value={i.text}
-            id='text_area' 
-            placeholder={this.props.step}>
-          </textarea>
-          {NextButton}
-          </div>
+        Text_box = (props)=>{
+          return(
+            <div
+              data-step={props['data-step']}
+              style={styles.child_step}>
+              <textarea 
+                data-isselected={true}
+                autoFocus
+                onChange={this.props.handle_step_text_box_input} 
+                value={i.text}
+                id='text_area' 
+                placeholder={this.props.step}>
+              </textarea>
+              {NextButton}
+            </div>
+          )
 
-        )
+        }
       }
       let row = (
         <Row key={key} data-step-key={key} ref={row} onClick={this.props.set_step} data-step={i.title}>
@@ -82,7 +115,9 @@ class Script_layout extends React.Component{
             className='div_step'>
               
             
-            {text_box}
+            <Text_box 
+              data-step={i.title}
+            />
           </div>
         </Row>
       )

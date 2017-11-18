@@ -1,24 +1,43 @@
 import React from 'react';
-import {Glyphicon, Button, Modal, Row, Col} from 'react-bootstrap';
-import Events from './event_emitter.js'
+import {Glyphicon, Button, Row, Col} from 'react-bootstrap';
 import CreateScriptModal from './make_script_modal.js'
 // import Clients_manager from './clients_manager.js'
 // import Client_response_options from './client_response_options.js'
 
 let styles = {
+  save_icon:{
+    color:'black',
+    paddingLeft:'5px',
+    fontSize:'20px',
+    textShadow:'0px 0px 1px rgba(222, 222, 222, 1)'
+  },
+  save_btn:{
+    marginTop:'5px',
+    fontSize:'20px'    
+  },
   header_container:{
-    border:'green solid 1px',
     position:'relative',
     minHeight:'9em'
   },
+  scripts_container_header:{
+    textAlign:'center',
+    textDecoration:'underline'
+  },
+  child_hide_scroll:{
+    overflowY:'scroll',
+    position: 'absolute',
+    top: '0',
+    bottom: '0',
+    left: '0',
+    right: '-17px',
+  },
   scripts_container:{
-    border:'solid 1px blue',
-    position:'absolute',
+    position:'relative',
     right:'0',
     height:'5em',
     width:'10em',
     fontSize:'2em',
-    overflow:'scroll'
+    overflow: 'hidden',
   },
   create_script_btn:{
     position:'absolute',
@@ -147,10 +166,12 @@ class Header extends React.Component{
 
     return(
       <div style = {styles.scripts_container}>
-        scripts
-        <ul className='script_list_container'>
-          {create_scripts_list()}
-        </ul>
+        <div style={styles.child_hide_scroll}>
+          <h4 style={styles.scripts_container_header}>Scripts List</h4>
+          <ul style={styles.scripts_list}>
+            {create_scripts_list()}
+          </ul>
+        </div>
       </div>
     )
   }
@@ -168,16 +189,27 @@ class Header extends React.Component{
       <div style = {styles.header_container}>
       <Row>
         <Col xs={4}>      
-          <CreateScriptModal
-            add_script={this.props.add_script}
-          />
+          <Row>
+            <Col xs={12}>
+              <CreateScriptModal
+                add_script={this.props.add_script}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <SaveButton 
+                save_script={this.props.save_script}
+              />
+            </Col>
+          </Row>
         </Col>
 
         <Col xs={4}>
           <h1 className="center_text">Sale script creater<span className="blinker"></span></h1>
           <h2 className="center_text">{this.props.current_script}</h2>
         </Col>
-        <Col xs={4} className="position-relative">
+        <Col className="center_text" xs={4}>
           <Scripts_container />
 
         </Col>        
@@ -187,3 +219,20 @@ class Header extends React.Component{
   }
 }
 export default Header
+
+
+let SaveButton = (props)=>{
+  return (
+    <Button
+      onClick={props.save_script}
+      style={styles.save_btn}
+      bsStyle='primary'>
+      Save Script  
+
+      <Glyphicon
+        style={styles.save_icon}
+        glyph="floppy-disk">
+      </Glyphicon>
+    </Button>
+  )
+}

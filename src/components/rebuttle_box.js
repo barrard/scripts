@@ -63,13 +63,40 @@ class Rebuttle_box extends React.Component{
   }
 
   render(){
+    console.log(this.props.script_steps())
+
     console.log(this.props)
     console.log(this.state)
+    let items = []
+    let script_options = [] 
+    let rebuttles_array = this.props.current_rebuttals
+    let message = this.props.message
+    console.log(rebuttles_array)
+    if(Array.isArray(rebuttles_array)){
+      rebuttles_array.forEach((i, key)=>{
+        if(i==='' |  i===null || i===undefined) return
+          console.log(i)
+          let item;
+            item = (
+              <li className="pre"
+                key={key}
+              >
+                {i}
+              </li>
+            )
+
+        items.push(item)
+
+      })
+      console.log(items)
+
+    }
     let rebuttle_list = document.getElementById('rebuttle_list');
     let main;
     main = (
       <div>
       <h4>Rebuttles for the objection: <span style={styles.current_objection}>{this.props.current_objection}</span></h4>
+      <strong>{this.props.current_objection_message}</strong>
       <textarea 
         style={styles.new_rebuttle_text_box}
         autoFocus
@@ -83,7 +110,14 @@ class Rebuttle_box extends React.Component{
         bsStyle="info">
         Add Rebuttle
       </Button>
-      <strong>{this.props.current_objection_details.message}</strong>
+        <h3>Action to take from this point</h3>
+        <ul id="rebuttle_list">
+          {items}
+        </ul>
+        <label><h4>Pick possile script routes</h4></label>
+        <select></select>
+
+        
       </div>
 
       )
@@ -92,39 +126,11 @@ class Rebuttle_box extends React.Component{
       // return main
     }
 
-    let items = []
-    let rebuttles_array = this.props.current_rebuttals
-    let message = this.props.message
-    console.log(rebuttles_array)
-    if(Array.isArray(rebuttles_array)){
-      rebuttles_array.forEach((i, key)=>{
-        if(i==='' |  i===null || i===undefined) return
-          console.log(i)
-          let item;
-            item = (
-              <li
-                key={key}
-              >
-                {i}
-              </li>
-            )
-
-        items.push(item)
-
-      })
-      console.log(items)
-
-    }
-
-
-
 
     return (
       <div>
           {main}
-        <ul id="rebuttle_list">
-          {items}
-        </ul>
+ 
       </div>
     )
   }
