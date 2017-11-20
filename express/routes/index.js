@@ -1,7 +1,4 @@
-const express = require('express')
-const passport = require('passport')
-
-const router = express.Router()
+const router = require('express').Router()
 
 router.use('/accounts', require('./accounts'))
 
