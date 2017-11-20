@@ -6,9 +6,9 @@ services:
     env_file:
       - '.env'
     ports:
-      - '$MONGO_PORT:$MONGO_PORT'
+      - '27017:27017'
     volumes:
-      - 'mongo_data:$MONGO_DBPATH'
+      - 'mongo_data:/data/db'
 
   node:
     depends_on:
@@ -18,7 +18,7 @@ services:
     env_file:
       - '.env'
     ports:
-      - '$EXPRESS_PORT:$EXPRESS_PORT'
+      - '$PORT:$PORT'
     volumes:
       - '.:/srv'
       - express_modules:/srv/express/node_modules
