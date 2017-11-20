@@ -15,6 +15,9 @@ done
 
 # Create the scripts database and a user
 # with MONGO_USER and MONGO_PASS.
+#
+# TODO: Inherit the database name from the environment.
+#       Introduce MONGO_DBNAME or some such.
 echo "Creating users and databases..."
 mongo admin --eval "
   db.createUser({
