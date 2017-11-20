@@ -9,10 +9,10 @@
     "react-scripts": "^1.0.14"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=$REACT_PORT react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:33333"
+  "proxy": "http://$EXPRESS_HOST:$EXPRESS_PORT"
 }

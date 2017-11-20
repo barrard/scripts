@@ -1,14 +1,9 @@
-const express = require('express')
 const logger = require('morgan')
 const body = require('body-parser')
 
-const Routes = require('../routes/index.js')
-
-// Get the env here, so as not to do an unnecessary global op later.
-const env = process.env.NODE_ENV
-
-// TODO: Surely some info would be helpful, right? Maybe a link to an express intro?
-const app = express();
+// TODO: Some info would be helpful, right?
+//       Maybe a link to an express intro?
+const app = require('express')()
 
 // Configure submodules.
 require('./security')(app)
@@ -28,6 +23,8 @@ app.use(body.urlencoded({
   extended: true
 }))
 
+// HEADERS
+//
 // CORS Headers allow React to communicate with the server.
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*")
@@ -37,7 +34,7 @@ app.use((req, res, next) => {
 
 // ERROR HANDLERS
 //
-if (env === 'development') {
+if (process.env.NODE_ENV === 'development') {
   // Development error handler prints stack trace.
   app.use((err, req, res, next) => {
     res.statuc(err.status || 500)
@@ -55,6 +52,7 @@ if (env === 'development') {
 }
 
 // ROUTES
-app.use('/', Routes)
+//
+app.use('/', require('../routes/index.js'))
 
 module.exports = app;

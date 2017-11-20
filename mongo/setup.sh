@@ -24,6 +24,8 @@ mongo admin --eval "
   });
 "
 
+# TODO: Save the demo records in `data.js`.
+
 # Shutdown, but return the status from the query.
 success=$?
 mongod --shutdown

@@ -4,8 +4,6 @@
 .env
 
 # dependencies
-node_modules/*
-!node_modules/.keep
 express/node_modules/*
 !express/node_modules/.keep
 react/node_modules/*
