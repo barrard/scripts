@@ -3,14 +3,16 @@ import Q_and_A from './components/make_question_answers.js'
 import Header from './components/header.js'
 import PleaseChooseScript from './components/please_choose_script.js'
 import './App.css';
-import Events from './components/event_emitter.js'
 import $ from './helper_funcs/dom_helpers.js'
+import {Grid, Row, Col} from 'react-bootstrap';
 
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state={
+			current_objection:'',
+			current_rebuttals:[],
 			mode:'build',
 			current_script:'Demo',
 			script_names_array:[
@@ -18,19 +20,21 @@ class App extends Component {
 				],
 			script_data:[
         {title:'Intro',
-          text:'test test etst',
+          text:`Hi, my name is Dave, can i'd like to tell you about this great new tool that will help triain your sales guys and gals, and increase your revenue!
+          Did i catch you at a good time?`,
           objections:{
-            'No':{
+          	'Yes, dont call me back':{
               style:'danger',
               'message':'If client says no here, the call os over',
               "next_step":[
                 'Thank you very much, good-bye',
                 'Can we schedule a chat for later?',
+                'Do you realize the value on my product?',
                 'you risk missing the boat!, act now!'
                 ],
                 action:'',
             },
-            'Yes':{
+            "I'd like to head more":{
               style:'success',
               'message':'Continue to next step of your script?, this could be a list of something?',
               'next_step':[
@@ -45,9 +49,13 @@ class App extends Component {
           types:['Gate Keeper', 'Target Prospect'],
           color:'blue'},
         {title:'Grab Attention',
-          text:'This product helped nasa achive the mission to the moon!',
+          text:`This product helped comapny-X's sales shoot to the moon!
+        We were featured in business weekly as top tool for 2017!
+        You know famous rch guy? He uses our product and sold billions of products with it
+         With our product you could expect to gain %15 more sales revenue
+          `,
           objections:{
-            'No':{
+            'No thanks':{
               style:'danger',
               'next_step':[
                 'you dont want to go to the moon?',
@@ -55,22 +63,50 @@ class App extends Component {
                 'how do you doo it?'
               ]
             },
-            'Yes':{
+            'No Time':{
+              style:'danger',
+              'next_step':[
+                '',
+              ]
+            },
+            'Too Expensive':{
+              style:'danger',
+              'next_step':[
+                'Let me explain the value of this product and you will realize it far out weighs the expense',
+                'This product will pay for itself many times over',
+                'This will help you save time and time = $'
+              ]
+            },
+            'Can yo lower your price?':{
+              style:'danger',
+              'next_step':[
+                'This is the best deal we can offer you',
+                'Explain again the value',
+                'stand by the value of your procduct',
+              ]
+            },
+            'Yes, this sounds good tell me more':{
               style:'success',
               'next_step':[
-                'Continue!'
+                'Disqualify Statement',
+                'Qualifying Questions',
+                'Common Pain Examples',
+                'Build Interest'
               ]
             },
           },
           types:['Name Drop', 'Product Value'],
           color:'yellow'},
         {title:'Disqualify Statement',
-          text:'',
+          text:`you cannot handle the %15 anticipated growth
+Can you tell me exactly what problem that feature would solve for you?
+Who on your team would that help most?`,
           objections:{},
           types:[],
           color:'yellow'},
         {title:'Qualifying Questions',
-          text:'',
+          text:`do you do this process and experience this pain, we cna help you!
+Ask the right questions`,
           objections:{},
           types:[],
           color:'yellow'},
@@ -81,7 +117,15 @@ class App extends Component {
           color:'yellow'},
         {title:'Build Interest',
           text:'',
-          objections:{},
+          objections:{
+          	'I need other features':{
+          	  style:'danger',
+          	  'next_step':[
+          	    '“If I had asked people what they wanted, they would have said faster horses.”—Henry Ford',
+          	    ''
+          	  ]
+          	},
+          },
           types:['Details','ROI','Name drop', 'Treats of non-action'],
           color:'yellow'},
         {title:'Close',
@@ -103,47 +147,34 @@ class App extends Component {
 		this.filter_script_data = this.filter_script_data.bind(this)
 		this.add_new_rebuttle = this.add_new_rebuttle.bind(this)
 		this.add_client_response = this.add_client_response.bind(this)
-		// this.add_client_response = this.add_client_response.bind(this)
+		this.save_script = this.save_script.bind(this)
 	
 	
 	}
 
 	componentWillMount() {
-		// $.init_current_script(this.state.current_script)
 		console.log('Main App.js will be mounted')
 		this.fetch_Script_list()
-		// Events.on('new_question', (data)=>{
-		// 	console.log('new question added to the list:  \n')
-		// 	console.log(data)
-		// 	let question_list = this.state.questions
-		// 	question_list.push(data)
-		// 	this.setState({
-		// 		questions:question_list
-		// 	})
-		// })
-
-		// Events.on('add_new_script', (data)=>{this.add_new_script(data)})
-		// Events.on('update_tag', (data)=>{this.handle_add_tag})
-		// Events.on('update_answer', (data)=>{this.handle_add_answer})
-		// Events.on('set_current_script', (data)=>{this.set_current_script(data)})
-		// Events.on('delete_script', (data)=>{this.delete_script(data)})
 
 	}
 
 	add_new_rebuttle(rebuttle_data){
 	  console.log(rebuttle_data)
-	  this.get_text_via_mode(this.state.script_data, this.state.step, (obj, index)=>{
+	  this.get_text_via_mode(this.state.script_data, rebuttle_data.step, (obj, index)=>{
 	    console.log(obj)
 	    console.log(index)
 	    let objections = obj.objections
+	    console.log(objections)
 	    console.log(objections[rebuttle_data.client_objection])
+	    if(objections[rebuttle_data.client_objection] === undefined) {
+	      console.log('make array?')
+	      objections[rebuttle_data.client_objection] = {}
+	      objections[rebuttle_data.client_objection].next_step=[]
+	    }
 	    let specific_objection = objections[rebuttle_data.client_objection]
 	    console.log(specific_objection)
-	    console.log(specific_objection.next_step)
-	    if(specific_objection.next_step === undefined) {
-	      console.log('make array?')
-	      specific_objection.next_step = []
-	    }
+	    // console.log(specific_objection.next_step)
+
 	    specific_objection.next_step.push(rebuttle_data.text)
 	    // console.log(specific_objection.next_step)
 	    obj.objections[rebuttle_data.client_objection] = specific_objection
@@ -212,7 +243,7 @@ class App extends Component {
 	  }
 
 
-		fetch('/delete_script/'+data)
+		fetch('/delete_script/'+dbid)
 		  .then((data)=>{
 		    console.log(data)
 		  })
@@ -242,7 +273,7 @@ class App extends Component {
 		this.setState({
 			current_script:script
 		})
-		this.fetch_script(script)
+		// this.fetch_script(script)
 
 	}
 
@@ -288,9 +319,10 @@ class App extends Component {
 				return resp.json()
 			})
 			.then((data)=>{
+				console.log(data)
 				//grab each script name and save in script_names_array
 				let script_names_array = []
-				data.forEach((i, key)=>{
+				data.data.forEach((i, key)=>{
 					let script = {}
 					script.name = i.name
 					script.dbid = i._id
@@ -348,6 +380,37 @@ class App extends Component {
 		// })
 	}
 
+	save_script(){
+		console.log('Save The Script!!!')
+		let script_data=this.state.script_data
+		let script_name=this.state.current_script
+		let script_model = {
+			name:script_name,
+			script_data:script_data
+		}
+
+		console.log(script_model)
+		fetch('/save_script',{
+		  method: "POST",
+		  body: JSON.stringify( script_model ),
+		  headers: { "Content-Type": "application/json" }
+
+		}).then((data)=>{
+		  console.log('can i get the id please')
+		  return data.json()
+		}).then((data)=>{
+		    //note error handle bellow is not soing anything
+		    if(data.success){
+		    	console.log('successful save_script '+data.success)
+		    }
+
+		}).catch((ex)=>{
+			console.log(ex)
+		})
+	}
+
+
+
   render() {
   	console.log('App.js is rendering script?')
   	console.log(this.state.current_script)
@@ -365,7 +428,9 @@ class App extends Component {
   	}else{
   		render_if_current_script = (
   			<div>
-  			<Q_and_A 
+  			<Q_and_A
+
+  				add_new_rebuttle={this.add_new_rebuttle}
   				add_client_response = {this.add_client_response}
   				script_data={this.state.script_data}
   				current_script={this.state.current_script}
@@ -375,16 +440,21 @@ class App extends Component {
   		)
   	}
     return (
-      <div>
-      <Header 
-      	add_script={this.handle_new_script}
-      	current_script={this.state.current_script}
-      	scripts_array={this.state.script_names_array}
-      	script_select={this.set_current_script}
-      	delete_script={this.delete_script}
-      />
-      	{render_if_current_script}
-      </div>
+				<Grid>
+					<Row>
+						<Col xs={16}>
+							<Header 
+								add_script={this.handle_new_script}
+								current_script={this.state.current_script}
+								scripts_array={this.state.script_names_array}
+								script_select={this.set_current_script}
+								delete_script={this.delete_script}
+								save_script={this.save_script}
+							/>
+								{render_if_current_script}							
+						</Col>
+					</Row>
+				</Grid>
     );
   }
 }
