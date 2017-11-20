@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+  mongo:
+    image: 'mongo:3.4.2'
+    env_file:
+      - '.env'
+    ports:
+      - '$MONGO_PORT:$MONGO_PORT'
+    volumes:
+      - 'mongo_data:$MONGO_DBPATH'
+
+  node:
+    depends_on:
+      - 'mongo'
+    build:
+      context: .
+    env_file:
+      - '.env'
+    ports:
+      - '$EXPRESS_PORT:$EXPRESS_PORT'
+    volumes:
+      - '.:/srv'
+      - express_modules:/srv/express/node_modules
+      - react_modules:/srv/react/node_modules
+      - root_modules:/srv/node_modules
+      - react_build:/srv/react/build
+
+# Some directories must be persisted outside of the
+# regular container images. This prevents building a
+# new container on one hand and running a command every time
+# a container boots on the other hand.
+volumes:
+  # Run `npm install` from a booted container to update dependencies.
+  express_modules:
+  react_modules:
+  root_modules:
+  # Run `npm build` from a booted container to update static assets.
+  react_build:
+  # Mongo will persist its data without changing its container image.
+  mongo_data:

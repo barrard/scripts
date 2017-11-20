@@ -3,13 +3,9 @@ var app = express();
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser')
 
-var colors = require('colors');
 var logger = require('tracer').colorConsole({
 	format : "<{{title}}>".yellow+" {{message}}".white+ "(in {{file}}".blue+":{{line}}".red+")",
-
 });
-
-
 
 var Question_model = require('./mongoose_models/question_model')
 
@@ -95,7 +91,7 @@ app.post('/add_question', (req, res)=>{
 		}
 	})
 
-	
+
 
 
 
