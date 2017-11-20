@@ -1,23 +1,10 @@
 const should = require('should')
-const mongoose = require('mongoose')
-const Account = require('../models/account.js')
-
-const mongo_user = process.env.MONGO_USER
-const mongo_pass = process.env.MONGO_PASS
-const mongo_host = process.env.MONGO_HOST
-const mongo_spec = `mongodb://${mongo_user}:${mongo_pass}@${mongo_host}/test`
-
-var db
+const database = require('./database')
+const Account = require('../models/account')
 
 describe('Account', () => {
-  before((done) => {
-    db = mongoose.connect(`mongodb://${mongo_host}/test`, {}, (err) => {
-      if (err) {
-        done(err)
-      }
-    })
-    done()
-  })
+  before(database.start)
+  after(database.stop)
 
   beforeEach((done) => {
     var account = new Account({
@@ -31,11 +18,6 @@ describe('Account', () => {
       }
       done()
     })
-  })
-
-  after((done) => {
-    mongoose.connection.close()
-    done()
   })
 
   afterEach((done) => {
