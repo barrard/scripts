@@ -13,8 +13,10 @@ server.listen(port)
 // Throw the error if it's anything else.
 server.on('error', (err) => {
   let msg = {
-    'EACCESS': `Port ${port} requires elevated privileges. Have you tried a different port?`,
-    'EADDRINUSE': `Port ${port} is not available. Is another server running?`,
+    'EACCESS': `Port ${port} requires elevated privileges. ` +
+               'Have you tried a different port?',
+    'EADDRINUSE': `Port ${port} is not available. ` +
+                  'Is another server running?',
   }[err.code]
 
   if (msg) {

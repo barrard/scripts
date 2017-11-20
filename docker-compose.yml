@@ -2,25 +2,27 @@ version: '2'
 
 services:
   mongo:
-    image: 'mongo:3.4.2'
-    env_file:
-      - '.env'
+    build:
+      context: ./mongo
+      args:
+        - MONGO_USER=$MONGO_USER
+        - MONGO_PASS=$MONGO_PASS
     ports:
-      - '27017:27017'
+      - 27017:27017
     volumes:
-      - 'mongo_data:/data/db'
+      - mongo_data:/data
 
   node:
     depends_on:
-      - 'mongo'
+      - mongo
     build:
       context: .
     env_file:
-      - '.env'
+      - .env
     ports:
-      - '$PORT:$PORT'
+      - $PORT:$PORT
     volumes:
-      - '.:/srv'
+      - .:/srv
       - express_modules:/srv/express/node_modules
       - react_modules:/srv/react/node_modules
       - root_modules:/srv/node_modules
