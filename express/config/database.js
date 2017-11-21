@@ -5,7 +5,8 @@ function init(app) {
   let user = process.env.MONGO_USER
   let pass = process.env.MONGO_PASS
   let host = process.env.MONGO_HOST
-  let spec = `mongodb://${user}:${pass}@${host}/scripts`
+  let name = process.env.MONGO_DBNAME
+  let spec = `mongodb://${user}:${pass}@${host}/${name}`
 
   // Connect to the mongo instance described in the environment.
   mongoose.connect(spec, { useMongoClient: true })

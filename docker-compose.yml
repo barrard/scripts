@@ -20,6 +20,7 @@ services:
       args:
         - MONGO_USER=$MONGO_USER
         - MONGO_PASS=$MONGO_PASS
+        - MONGO_DBNAME=$MONGO_DBNAME
 
     # The official mongo docker image has this port hard-coded, so we
     # have to use it.
