@@ -1,7 +1,9 @@
 #!/bin/sh
 
+echo $MONGO_DBPATH
+
 # Run MongoDB in the background.
-mongod &
+mongod --dbpath=$MONGO_DBPATH &
 
 # Wait until MongoDB responds to the help command.
 starting=1
@@ -31,5 +33,5 @@ mongo admin --eval "
 
 # Shutdown, but return the status from the query.
 success=$?
-mongod --shutdown
+mongod --shutdown --dbpath=$MONGO_DBPATH
 exit $success

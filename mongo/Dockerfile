@@ -11,6 +11,7 @@ MAINTAINER William T. Cinnamon <tyler@skotchpine.com>
 
 ARG MONGO_USER
 ARG MONGO_PASS
+ARG MONGO_DBPATH
 ARG MONGO_DBNAME
 
 COPY setup.sh /setup.sh

@@ -9,6 +9,9 @@ express/node_modules/*
 react/node_modules/*
 !react/node_modules/.keep
 
+# data
+mongo/data
+
 # testing
 coverage/*
 !coverage/.keep
