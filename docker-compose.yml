@@ -1,0 +1,127 @@
+version: '2'
+
+# Scripts is comprised of three services: mongo, express and react.
+# The front-end is built with React, compiled by webpack via create-react-app.
+#
+# At the moment, react-server forwards requests prefixed with /app
+# to the express service, which uses mongo as it's data store.
+#
+# All containers have some configuration available via a `.env`
+# file and all containers have some persisted data using volumes.
+services:
+
+  # The mongo container is the data store for express.
+  mongo:
+    # Use the ./mongo/Dockerfile to build the mongo container.
+    build:
+      context: ./mongo
+      # An application user is created with restricted permissions
+      # when the container is built, so we need these args (from the .env file).
+      args:
+        - MONGO_USER=$MONGO_USER
+        - MONGO_PASS=$MONGO_PASS
+        - MONGO_DBPATH=$MONGO_DBPATH
+        - MONGO_DBNAME=$MONGO_DBNAME
+
+    # The official mongo docker image has this port hard-coded, so we
+    # have to use it.
+    ports:
+      - 27017:27017
+
+    # Databases need their data persisted to volumes in containerland.
+    # See the volumes section below.
+    volumes:
+      - mongo_data:/data
+
+  # The express container runs `npm start` in the express directory.
+  # This container is not meant to be accessed directly, but rather
+  # used by the react container as a proxy for api requests.
+  express:
+    # The express container probably does not need to depend on mongo,
+    # this is just to avoid potentially confusing exceptions.
+    #
+    # TODO: Use 'forever' (npm package) to weather initial crashes.
+    depends_on:
+      - mongo
+
+    # Use the ./react/Dockerfile to build the react container.
+    build:
+      context: ./express
+
+    # Use the global config file.
+    env_file:
+      - .env
+
+    # Use a custom port for react.
+    ports:
+      - $EXPRESS_PORT:$EXPRESS_PORT
+
+    volumes:
+      # Bind the ./express directory to the container, so that changes
+      # are seen immediately and no rebuilding or rebooting is necessary.
+      - ./express:/srv
+
+      # Persist node_modules between container boots without rebuilding.
+      # See volumes section below.
+      - express_modules:/srv/express/node_modules
+
+  # The react container runs `npm start` in the react directory. Requests
+  # prefixed with /api are forwarded to the express container.
+  react:
+    # React probably does not need to depend on express,
+    # this is just to avoid potentially confusing exceptions.
+    #
+    # TODO: Use 'forever' (npm package) to weather initial crashes.
+    depends_on:
+      - express
+
+    # Use the ./react/Dockerfile to build the react container.
+    build:
+      context: ./react
+
+    # Use the global config file.
+    env_file:
+      - .env
+
+    # Use a custom port for react.
+    ports:
+      - $REACT_PORT:$REACT_PORT
+
+    volumes:
+      # Bind the ./react directory to the container, so that changes
+      # are seen immediately and no rebuilding or rebooting is necessary.
+      - ./react:/srv
+
+      # Persist node_modules between container boots without rebuilding.
+      # See volumes section below.
+      - react_modules:/srv/react/node_modules
+
+      # Persist webpack's finished assets.
+      # See volumes section below.
+      - react_build:/srv/react/build
+
+# Some directories must be persisted outside of the regular container images.
+# This prevents building a new container or running setup commands on boot
+# whenever something changes.
+volumes:
+
+  # Run `npm install` or `npm update` from a booted container to
+  # install or update dependencies.
+  #
+  # For example: `docker-compose run express npm update` will update
+  # both ./express/package.json, ./express/package-lock.json and the
+  # express_modules volume, but not affect the express container image.
+  express_modules:
+  react_modules:
+  root_modules:
+
+  # Run `npm build` from a booted container to update static assets.
+  #
+  # For example: `docker-compose run react npm run build` will compile
+  # front-end assets and persist them to this volume without affecting the
+  # react container image.
+  react_build:
+
+  # Mongo will persist its data without changing its container image.
+  # TODO: Find a good method of extracting / backing up data with this scheme.
+  mongo_data:

@@ -1,37 +1,3 @@
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser')
-var util = require("util");
-var colors = require('colors');
-var logger = require('tracer').colorConsole({
-	format : "<{{title}}>".yellow+" {{message}}".white+ "(in {{file}}".blue+":{{line}}".red+")",
-
-});
-
-
-
-// var Question_model = require('./mongoose_models/question_model')
-
-// mongoose.connect("mongodb://localhost/Q_A")
-var MongoClient = require('mongodb').MongoClient
-var ObjectId = require('mongodb').ObjectID;
-
-var url = 'mongodb://localhost:27017/Q_A';
-
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
-}));
-
-function err_handle(err){
-	if(!err) logger.log('no err')
-		else logger.log('err'+err)
-}
 
 app.post('/save_script', (req, res)=>{
 	logger.log(req.body)
@@ -39,10 +5,8 @@ app.post('/save_script', (req, res)=>{
 	  if (!err) {
 	  	logger.log('got connected')
 	  	var collection = db.collection('script_data');
-
 	  	collection.insert(req.body)
 	  	// res.send({success:'script_data saved'})
-
 	  }else{
 	  	logger.log('error db connection')
 	  	logger.log(err)
@@ -63,19 +27,34 @@ app.get('/delete_script/:id', (req, res)=>{
 	  			console.log('item')
 	  		}
 	  	})
-
 	  }else{
 	  	logger.log('error db connection')
 	  	logger.log(err)
 	  	res.send({err:'script_data was not saved!', message:err})
-
 	  }
 	})
 
-
+	// var Answers = ['yes', 'no','maybe','FA-SHOW']
+	// var question = new Question_model.Question()
+	// 	question.type='basic info'
+	// 	Answers.forEach((i)=>{
+	// 		var answer = new Question_model.Answer()
+	// 		answer.type='basic'
+	// 		answer.answer_value=i
+	// 		answer.tags=['basic','safe']
+	// 		answer.weight_value=1
+	// 		question.answers.push(answer)
+	// 		answer.save((err)=>{
+	// 			if(err) logger.log(err)
+	// 				else logger.log('answer saved')
+	// 		})
+	// 	})
+	// 	question.question_value='Will you show me your tits'
+	// question.save(function(err){
+	// 	logger.log(err)
+	// 	logger.log('questionable actons herer')
+	// })
 })
-
-
 
 app.get('/get_script_list', (req, res)=>{
   // logger.log(req.params)
@@ -93,15 +72,12 @@ app.get('/get_script_list', (req, res)=>{
     		// logger.log(db_data)
     		res.send({success:'script_data was delivered from Mongo', data:db_data})
     		logger.log('Succes')
-   
-    		
     	})
 
     }else{
     	logger.log('error db connection')
     	logger.log(err)
     	res.send({err:'script_data was not saved!', message:err})
-
     }
   })
 })
@@ -121,18 +97,12 @@ app.post('/add_script', (req, res)=>{
 			res.send({success:script.id})
 		}
 	})
-
 })
 
 app.get('/get_QA_list/:script', function(req, res){
 	let script = req.params.script
 	logger.log('get_QA_list/:script route')
 	logger.log(script)
-
-
-
-
-
 	// Question_model.Question.find((err, questions)=>{
 	// 	if(err){
 	// 		logger.log(err)
@@ -140,13 +110,6 @@ app.get('/get_QA_list/:script', function(req, res){
 	// 		logger.log(questions)
 	// 	}
 	// })
-
-
 	// res.send({msg:'hi from server'})
-
 })
 
-
-var port = 33333
-app.listen(port)
-logger.log('listening on port '+port)
